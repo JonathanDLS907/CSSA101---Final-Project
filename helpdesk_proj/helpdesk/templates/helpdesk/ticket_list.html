@@ -1,49 +1,94 @@
 {% extends "helpdesk/base.html" %}
-
 {% block title %}Tickets{% endblock %}
 
 {% block content %}
-<h2>All Tickets</h2>
-
-<!-- Search + priority filter -->
-<form method="get" style="margin-bottom: 12px;">
-  <input type="text" name="q" placeholder="Search title or description" value="{{ q }}">
-
-  <select name="priority">
-    <option value="">All priorities</option>
-    <option value="H" {% if selected_priority == 'H' %}selected{% endif %}>High</option>
-    <option value="M" {% if selected_priority == 'M' %}selected{% endif %}>Medium</option>
-    <option value="L" {% if selected_priority == 'L' %}selected{% endif %}>Low</option>
-  </select>
-
-  <button type="submit">Search</button>
-</form>
-
-{% for ticket in tickets %}
-<div class="card">
-  <a href="{% url 'helpdesk:ticket_detail' ticket.pk %}"><strong>#{{ ticket.id }} - {{ ticket.title }}</strong></a>
-
-  <p class="small">
-    Status: {{ ticket.get_status_display }} •
-    Priority: <span class="priority priority-{{ ticket.priority }}">{{ ticket.get_priority_display }}</span> •
-
-    {% if ticket.due_at %}
-      Due: {{ ticket.due_at|date:"Y-m-d H:i" }}
-      {% if ticket.is_overdue %}
-        <strong style="color:red">• OVERDUE</strong>
-      {% endif %}
-      •
-    {% else %}
-      Due: —
-      •
-    {% endif %}
-
-    By {{ ticket.reporter_name }} • {{ ticket.created_at|date:"Y-m-d H:i" }}
-  </p>
-
-  <p>{{ ticket.description|truncatewords:25 }}</p>
+<div class="row mb-3">
+  <div class="col-12">
+    <h2 class="mb-0">All Tickets</h2>
+  </div>
 </div>
-{% empty %}
-<p>No tickets found.</p>
-{% endfor %}
+
+<div class="row mb-3">
+  <div class="col-lg-8">
+    <form method="get" class="row g-2 align-items-center">
+      <div class="col-sm-6">
+        <input class="form-control" type="text" name="q" placeholder="Search title or description" value="{{ q }}">
+      </div>
+      <div class="col-sm-3">
+        <select class="form-select" name="priority">
+          <option value="">All priorities</option>
+          <option value="H" {% if selected_priority == 'H' %}selected{% endif %}>High</option>
+          <option value="M" {% if selected_priority == 'M' %}selected{% endif %}>Medium</option>
+          <option value="L" {% if selected_priority == 'L' %}selected{% endif %}>Low</option>
+        </select>
+      </div>
+      <div class="col-sm-3">
+        <button class="btn btn-primary w-100" type="submit">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="col-lg-4 text-lg-end mt-2 mt-lg-0">
+    {% if is_paginated %}
+      <small class="text-muted">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</small>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    {% for ticket in tickets %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <a href="{% url 'helpdesk:ticket_detail' ticket.pk %}" class="text-decoration-none text-dark">
+            <div class="d-flex justify-content-between">
+              <h5 class="ticket-title mb-1">#{{ ticket.pk }} — {{ ticket.title }}</h5>
+              <small class="text-muted">{{ ticket.created_at|date:"Y-m-d H:i" }}</small>
+            </div>
+          </a>
+
+          <div class="d-flex flex-wrap align-items-center gap-2 meta-muted mb-2">
+            <div>Status: {{ ticket.get_status_display }}</div>
+            <div>
+              <span class="badge badge-priority-{{ ticket.priority }} text-white">
+                {{ ticket.get_priority_display }}
+              </span>
+            </div>
+
+            {% if ticket.due_at %}
+              <div>Due: {{ ticket.due_at|date:"Y-m-d H:i" }}</div>
+              {% if ticket.is_overdue %}
+                <div><span class="badge badge-overdue">OVERDUE</span></div>
+              {% endif %}
+            {% endif %}
+
+            <div class="ms-auto">By {{ ticket.reporter_name }}</div>
+          </div>
+
+          <p class="mb-0 text-truncate">{{ ticket.description|truncatechars:220 }}</p>
+        </div>
+      </div>
+    {% empty %}
+      <div class="alert alert-secondary">No tickets found.</div>
+    {% endfor %}
+
+    {% if is_paginated %}
+      <nav aria-label="Ticket pagination">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}">Previous</a></li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">Previous</span></li>
+          {% endif %}
+          <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}">Next</a></li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">Next</span></li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

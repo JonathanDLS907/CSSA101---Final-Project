@@ -1,29 +1,37 @@
 {% extends "helpdesk/base.html" %}
-{% block title %}Ticket #{{ ticket.id }}{% endblock %}
+{% block title %}Ticket #{{ ticket.pk }} — {{ ticket.title }}{% endblock %}
 
 {% block content %}
 <div class="card">
-  <h2>#{{ ticket.id }} - {{ ticket.title }}</h2>
-  <p class="small">
-    Status: {{ ticket.get_status_display }} •
-    Priority: <span class="priority priority-{{ ticket.priority }}">{{ ticket.get_priority_display }}</span> •
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <h3 class="mb-1">#{{ ticket.pk }} — {{ ticket.title }}</h3>
+        <div class="meta-muted">
+          Status: {{ ticket.get_status_display }} •
+          <span class="badge badge-priority-{{ ticket.priority }} text-white">{{ ticket.get_priority_display }}</span> •
+          SLA: {{ ticket.sla_hours }} hrs
+        </div>
+      </div>
 
-    SLA: {{ ticket.sla_hours }} hrs •
+      <div class="text-end">
+        {% if ticket.due_at %}
+          <div class="mb-1">Due: <strong>{{ ticket.due_at|date:"Y-m-d H:i" }}</strong></div>
+          {% if ticket.is_overdue %}
+            <div><span class="badge badge-overdue">OVERDUE</span></div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
 
-    {% if ticket.due_at %}
-      Due: {{ ticket.due_at|date:"Y-m-d H:i" }}
-      {% if ticket.is_overdue %}
-        <strong style="color:red">• OVERDUE</strong>
-      {% endif %}
-    {% else %}
-      Due: —
-    {% endif %}
-  </p>
-  <hr>
-  <p>{{ ticket.description|linebreaks }}</p>
+    <hr>
+
+    <div style="white-space:pre-wrap;">{{ ticket.description }}</div>
+
+    <div class="mt-4 d-flex justify-content-between">
+      <div class="meta-muted">Reported by {{ ticket.reporter_name }} • {{ ticket.created_at|date:"Y-m-d H:i" }}</div>
+      <a href="{% url 'helpdesk:ticket_list' %}" class="btn btn-outline-secondary">Back</a>
+    </div>
+  </div>
 </div>
-
-<p style="margin-top:12px">
-  <a href="{% url 'helpdesk:ticket_list' %}" class="btn">← Back to list</a>
-</p>
 {% endblock %}

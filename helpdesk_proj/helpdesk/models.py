@@ -12,15 +12,14 @@ class Ticket(models.Model):
     reporter_name = models.CharField(max_length=100)
     reporter_email = models.EmailField(blank=True)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='P')
-    priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, default='M')  # if already added in 1.1
-    sla_hours = models.PositiveIntegerField(default=48)   # NEW: SLA window in hours
-    due_at = models.DateTimeField(null=True, blank=True)  # NEW: computed
+    priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, default='M')  
+    sla_hours = models.PositiveIntegerField(default=48)   
+    due_at = models.DateTimeField(null=True, blank=True)  
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
-        # set due_at when creating (only if not set)
         if not self.pk and not self.due_at:
             self.due_at = timezone.now() + timedelta(hours=self.sla_hours)
         super().save(*args, **kwargs)

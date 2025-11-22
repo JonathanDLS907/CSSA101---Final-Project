@@ -1,17 +1,39 @@
-{# helpdesk/templates/helpdesk/ticket_form.html #}
-<form method="post" class="ticket-form">
+<form method="post" novalidate>
   {% csrf_token %}
-  {{ form.non_field_errors }}
 
-  <label>Title<br>{{ form.title }}</label><br><br>
+  <div class="mb-3">
+    <label class="form-label">Title</label>
+    {{ form.title }}
+    {{ form.title.errors }}
+  </div>
 
-  <label>Description<br>{{ form.description }}</label><br><br>
+  <div class="mb-3">
+    <label class="form-label">Description</label>
+    {{ form.description }}
+    {{ form.description.errors }}
+  </div>
 
-  <label>Your name<br>{{ form.reporter_name }}</label><br><br>
+  <div class="row g-3 mb-3">
+    <div class="col-md-6">
+      <label class="form-label">Your name</label>
+      {{ form.reporter_name }}
+      {{ form.reporter_name.errors }}
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Your email (optional)</label>
+      {{ form.reporter_email }}
+      {{ form.reporter_email.errors }}
+    </div>
+  </div>
 
-  <label>Your email (optional)<br>{{ form.reporter_email }}</label><br><br>
+  <div class="mb-3">
+    <label class="form-label">Priority</label>
+    {{ form.priority }}
+    {{ form.priority.errors }}
+  </div>
 
-  <label>Priority<br>{{ form.priority }}</label><br><br>
-
-  <button class="btn" type="submit">Submit</button>
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary" type="submit">Submit</button>
+    <a class="btn btn-outline-secondary" href="{% url 'helpdesk:ticket_list' %}">Cancel</a>
+  </div>
 </form>

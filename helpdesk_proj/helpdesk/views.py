@@ -41,15 +41,12 @@ class TicketCreateView(CreateView):
     success_url = reverse_lazy('helpdesk:ticket_list')
 
     def form_valid(self, form):
-        # save object
-        response = super().form_valid(form)  # saves object as self.object
+        response = super().form_valid(form) 
 
-        # build absolute URL for the ticket (works whether or not get_absolute_url exists)
         ticket_url = self.request.build_absolute_uri(
             reverse('helpdesk:ticket_detail', args=[self.object.pk])
         )
 
-        # send email if reporter provided (console backend will print it)
         if self.object.reporter_email:
             subject = f"Ticket #{self.object.pk} received"
             message = (

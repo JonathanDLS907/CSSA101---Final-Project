@@ -3,7 +3,9 @@
 
 {% block content %}
 <div class="card">
-  <h2>Submit Ticket</h2>
-  {% include "helpdesk/ticket_form.html" %}
+  <div class="card-body">
+    <h4 class="mb-3">Submit a new ticket</h4>
+    {% include "helpdesk/ticket_form.html" %}
+  </div>
 </div>
 {% endblock %}
