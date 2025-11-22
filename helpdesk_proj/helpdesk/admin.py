@@ -5,6 +5,5 @@ from .models import Ticket
 class TicketAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'status', 'reporter_name', 'created_at')
     list_filter = ('status',)
-    search_fields = ('title', 'description')
-
-# Register your models here.
+    search_fields = ('title', 'description', 'reporter_name', 'reporter_email')
+    list_editable = ('status',)   # allows changing status directly in list view
