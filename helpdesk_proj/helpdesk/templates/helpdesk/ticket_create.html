@@ -4,10 +4,6 @@
 {% block content %}
 <div class="card">
   <h2>Submit Ticket</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn" type="submit">Submit</button>
-  </form>
+  {% include "helpdesk/ticket_form.html" %}
 </div>
 {% endblock %}

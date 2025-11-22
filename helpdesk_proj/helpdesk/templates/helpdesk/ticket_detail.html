@@ -5,10 +5,16 @@
 <div class="card">
   <h2>#{{ ticket.id }} - {{ ticket.title }}</h2>
   <p class="small">
-    Status: {{ ticket.get_status_display }} • By {{ ticket.reporter_name }} • {{ ticket.created_at|date:"Y-m-d H:i" }}
+    Status: {{ ticket.get_status_display }} •
+    Priority:
+    <span class="priority priority-{{ ticket.priority }}">{{ ticket.get_priority_display }}</span>
+    • By {{ ticket.reporter_name }} • {{ ticket.created_at|date:"Y-m-d H:i" }}
   </p>
   <hr>
   <p>{{ ticket.description|linebreaks }}</p>
 </div>
-<a href="/" class="btn">Back</a>
+
+<p style="margin-top:12px">
+  <a href="{% url 'helpdesk:ticket_list' %}" class="btn">← Back to list</a>
+</p>
 {% endblock %}
