@@ -1,0 +1,14 @@
+{% extends "helpdesk/base.html" %}
+{% block title %}Ticket #{{ ticket.id }}{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2>#{{ ticket.id }} - {{ ticket.title }}</h2>
+  <p class="small">
+    Status: {{ ticket.get_status_display }} • By {{ ticket.reporter_name }} • {{ ticket.created_at|date:"Y-m-d H:i" }}
+  </p>
+  <hr>
+  <p>{{ ticket.description|linebreaks }}</p>
+</div>
+<a href="/" class="btn">Back</a>
+{% endblock %}
