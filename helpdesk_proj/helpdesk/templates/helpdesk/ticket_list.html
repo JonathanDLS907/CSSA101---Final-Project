@@ -21,15 +21,24 @@
 
 {% for ticket in tickets %}
 <div class="card">
-  <a href="/ticket/{{ ticket.id }}/"><strong>#{{ ticket.id }} - {{ ticket.title }}</strong></a>
+  <a href="{% url 'helpdesk:ticket_detail' ticket.pk %}"><strong>#{{ ticket.id }} - {{ ticket.title }}</strong></a>
 
   <p class="small">
-    Status: {{ ticket.get_status_display }} • 
-    Priority: 
-    <span class="priority priority-{{ ticket.priority }}">
-      {{ ticket.get_priority_display }}
-    </span>
-    • By {{ ticket.reporter_name }} • {{ ticket.created_at|date:"Y-m-d H:i" }}
+    Status: {{ ticket.get_status_display }} •
+    Priority: <span class="priority priority-{{ ticket.priority }}">{{ ticket.get_priority_display }}</span> •
+
+    {% if ticket.due_at %}
+      Due: {{ ticket.due_at|date:"Y-m-d H:i" }}
+      {% if ticket.is_overdue %}
+        <strong style="color:red">• OVERDUE</strong>
+      {% endif %}
+      •
+    {% else %}
+      Due: —
+      •
+    {% endif %}
+
+    By {{ ticket.reporter_name }} • {{ ticket.created_at|date:"Y-m-d H:i" }}
   </p>
 
   <p>{{ ticket.description|truncatewords:25 }}</p>

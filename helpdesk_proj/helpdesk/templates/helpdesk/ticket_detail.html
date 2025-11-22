@@ -6,9 +6,18 @@
   <h2>#{{ ticket.id }} - {{ ticket.title }}</h2>
   <p class="small">
     Status: {{ ticket.get_status_display }} •
-    Priority:
-    <span class="priority priority-{{ ticket.priority }}">{{ ticket.get_priority_display }}</span>
-    • By {{ ticket.reporter_name }} • {{ ticket.created_at|date:"Y-m-d H:i" }}
+    Priority: <span class="priority priority-{{ ticket.priority }}">{{ ticket.get_priority_display }}</span> •
+
+    SLA: {{ ticket.sla_hours }} hrs •
+
+    {% if ticket.due_at %}
+      Due: {{ ticket.due_at|date:"Y-m-d H:i" }}
+      {% if ticket.is_overdue %}
+        <strong style="color:red">• OVERDUE</strong>
+      {% endif %}
+    {% else %}
+      Due: —
+    {% endif %}
   </p>
   <hr>
   <p>{{ ticket.description|linebreaks }}</p>

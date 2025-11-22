@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.db.models import Q
+from django.core.mail import send_mail
+from django.conf import settings
 from .models import Ticket
 from .forms import TicketForm
 
@@ -37,4 +39,34 @@ class TicketCreateView(CreateView):
     form_class = TicketForm
     template_name = 'helpdesk/ticket_create.html'
     success_url = reverse_lazy('helpdesk:ticket_list')
+
+    def form_valid(self, form):
+        # save object
+        response = super().form_valid(form)  # saves object as self.object
+
+        # build absolute URL for the ticket (works whether or not get_absolute_url exists)
+        ticket_url = self.request.build_absolute_uri(
+            reverse('helpdesk:ticket_detail', args=[self.object.pk])
+        )
+
+        # send email if reporter provided (console backend will print it)
+        if self.object.reporter_email:
+            subject = f"Ticket #{self.object.pk} received"
+            message = (
+                f"Hello {self.object.reporter_name},\n\n"
+                f"Your ticket has been received.\n\n"
+                f"Ticket ID: {self.object.pk}\n"
+                f"Title: {self.object.title}\n"
+                f"View: {ticket_url}\n\n"
+                "We will respond as soon as possible."
+            )
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [self.object.reporter_email],
+                fail_silently=True,
+            )
+
+        return response
 
